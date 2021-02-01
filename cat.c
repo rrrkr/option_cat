@@ -81,8 +81,13 @@ static void do_cat_ne(FILE *fp)
 	unsigned int count = 0;
 
 	while(fgets(tmp_buf, sizeof tmp_buf, fp) != NULL){
-		tmp_buf[strlen(tmp_buf) - 1] = '$';
-		snprintf(buf, sizeof buf, "%d\t%s\n", ++count, tmp_buf);
+		char *newlinep = &tmp_buf[strlen(tmp_buf) - 1];
+		if(*newlinep == '\n'){
+			*newlinep = '$';
+			snprintf(buf, sizeof buf, "%d\t%s\n", ++count, tmp_buf);
+		} else {
+			snprintf(buf, sizeof buf, "%d\t%s", ++count, tmp_buf);
+		}
 		fputs(buf, stdout);
 	}
 }
@@ -104,8 +109,13 @@ static void do_cat_e(FILE *fp)
 	char buf[LINELEN + 1];
 
 	while(fgets(tmp_buf, sizeof tmp_buf, fp) != NULL){
-		tmp_buf[strlen(tmp_buf) - 1] = '$';
-		snprintf(buf, sizeof buf, "%s\n", tmp_buf);
+		char *newlinep = &tmp_buf[strlen(tmp_buf) - 1];
+		if(*newlinep == '\n'){
+			*newlinep = '$';
+			snprintf(buf, sizeof buf, "%s\n", tmp_buf);
+		} else {
+			snprintf(buf, sizeof buf, "%s", tmp_buf);
+		}
 		fputs(buf, stdout);
 	}
 }
