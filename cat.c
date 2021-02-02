@@ -4,10 +4,10 @@
 #include<getopt.h>  /* getopt_long */
 #include<string.h>  /* strlen */
 
-static void do_cat_ne(FILE *fp);
-static void do_cat_n(FILE *fp);
-static void do_cat_e(FILE *fp);
-static void do_cat(FILE *fp);
+static void do_cat_ne(FILE *fp);  /* cat -ne */
+static void do_cat_n(FILE *fp);   /* cat -n */
+static void do_cat_e(FILE *fp);   /* cat -e */
+static void do_cat(FILE *fp);     /* cat */
 static void die(const char *str);
 
 #define TRUE 1
@@ -37,13 +37,16 @@ int main(int argc,char *argv[])
 				show_ends = TRUE;
 				break;
 			case 'h':
-				fprintf(stderr, "Usage: %s [-nE] [file ...]\n", argv[0]);
+				fprintf(stdout, "Usage: %s [-nE] [file ...]\n", argv[0]);
 				exit(0);
+			case '?':
+				fprintf(stderr, "Usage: %s [-nE] [file ...]\n", argv[0]);
+				exit(1);
 		}
 	}
 
 	if(optind == argc) {
-		if(number & show_ends) 
+		if(number & show_ends)
 			do_cat_ne(stdin);
 		else if(number)
 			do_cat_n(stdin);
@@ -82,12 +85,12 @@ static void do_cat_ne(FILE *fp)
 
 	while(fgets(tmp_buf, sizeof tmp_buf, fp) != NULL){
 		char *newlinep = &tmp_buf[strlen(tmp_buf) - 1];
-		if(*newlinep == '\n'){
+		if(*newlinep  == '\n'){
 			*newlinep = '$';
 			snprintf(buf, sizeof buf, "%d\t%s\n", ++count, tmp_buf);
 		} else {
 			snprintf(buf, sizeof buf, "%d\t%s", ++count, tmp_buf);
-		}
+	  }
 		fputs(buf, stdout);
 	}
 }
@@ -110,13 +113,13 @@ static void do_cat_e(FILE *fp)
 
 	while(fgets(tmp_buf, sizeof tmp_buf, fp) != NULL){
 		char *newlinep = &tmp_buf[strlen(tmp_buf) - 1];
-		if(*newlinep == '\n'){
+		if(*newlinep == '\n') {
 			*newlinep = '$';
 			snprintf(buf, sizeof buf, "%s\n", tmp_buf);
 		} else {
 			snprintf(buf, sizeof buf, "%s", tmp_buf);
 		}
-		fputs(buf, stdout);
+		fputs(buf,stdout);
 	}
 }
 static void do_cat(FILE *fp)
